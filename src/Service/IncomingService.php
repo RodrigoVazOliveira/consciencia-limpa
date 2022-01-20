@@ -32,6 +32,12 @@ class IncomingService
         return $incoming;
     }
     
+    public function getAll()
+    {
+        $this->logger->info('getAll - obtendo todas as receitas no banco de dados!');
+        return $this->incomingRepository->findAll();
+    }
+    
     private function existsEqualsDecriptionsInMonth($description, $date):bool
     {
         $this->logger->info('existsEqualsDecriptionsInMonth - description: '. $description);
