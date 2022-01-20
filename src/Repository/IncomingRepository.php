@@ -18,33 +18,20 @@ class IncomingRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Incoming::class);
     }
-
-    // /**
-    //  * @return Incoming[] Returns an array of Incoming objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    
+    public function findByDescriptionByIsMothCurrenty($description, \DateTime $date)
     {
+        $month = $date->format('m');
+        $year  = $date->format('Y');
+        $dateIntialMonth = date($year.'-'.$month.'-01');
+        $dateFinalMotnh = date($year.'-'.$month.'-t');
+        
         return $this->createQueryBuilder('i')
-            ->andWhere('i.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('i.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+            ->where('i.description = :description')
+            ->andWhere('i.date between :dateIn AND :dateFinal')
+            ->setParameter('description', $description)
+            ->setParameter('dateIn', $dateIntialMonth)
+            ->setParameter('dateFinal', $dateFinalMotnh)
+            ->getQuery()->getOneOrNullResult();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Incoming
-    {
-        return $this->createQueryBuilder('i')
-            ->andWhere('i.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

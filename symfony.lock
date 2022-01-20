@@ -91,6 +91,18 @@
     "nikic/php-parser": {
         "version": "v4.13.2"
     },
+    "phpdocumentor/reflection-common": {
+        "version": "2.2.0"
+    },
+    "phpdocumentor/reflection-docblock": {
+        "version": "5.3.0"
+    },
+    "phpdocumentor/type-resolver": {
+        "version": "1.6.0"
+    },
+    "phpstan/phpdoc-parser": {
+        "version": "1.2.0"
+    },
     "psr/cache": {
         "version": "3.0.0"
     },
@@ -197,6 +209,24 @@
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
     },
+    "symfony/monolog-bridge": {
+        "version": "v6.0.1"
+    },
+    "symfony/monolog-bundle": {
+        "version": "3.7",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.7",
+            "ref": "a7bace7dbc5a7ed5608dbe2165e0774c87175fe6"
+        },
+        "files": [
+            "config/packages/dev/monolog.yaml",
+            "config/packages/prod/deprecations.yaml",
+            "config/packages/prod/monolog.yaml",
+            "config/packages/test/monolog.yaml"
+        ]
+    },
     "symfony/polyfill-intl-grapheme": {
         "version": "v1.24.0"
     },
@@ -208,6 +238,12 @@
     },
     "symfony/polyfill-php81": {
         "version": "v1.24.0"
+    },
+    "symfony/property-access": {
+        "version": "v6.0.2"
+    },
+    "symfony/property-info": {
+        "version": "v6.0.2"
     },
     "symfony/proxy-manager-bridge": {
         "version": "v6.0.2"
@@ -228,6 +264,9 @@
     "symfony/runtime": {
         "version": "v6.0.0"
     },
+    "symfony/serializer": {
+        "version": "v6.0.2"
+    },
     "symfony/service-contracts": {
         "version": "v3.0.0"
     },
@@ -237,6 +276,22 @@
     "symfony/string": {
         "version": "v6.0.2"
     },
+    "symfony/translation-contracts": {
+        "version": "v3.0.0"
+    },
+    "symfony/validator": {
+        "version": "6.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "4.3",
+            "ref": "3eb8df139ec05414489d55b97603c5f6ca0c44cb"
+        },
+        "files": [
+            "config/packages/test/validator.yaml",
+            "config/packages/validator.yaml"
+        ]
+    },
     "symfony/var-dumper": {
         "version": "v6.0.2"
     },
@@ -245,5 +300,8 @@
     },
     "symfony/yaml": {
         "version": "v6.0.2"
+    },
+    "webmozart/assert": {
+        "version": "1.10.0"
     }
 }

@@ -1,13 +1,13 @@
 <?php
-
 namespace App\Entity;
 
 use App\Repository\IncomingRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: IncomingRepository::class)]
-class Incoming
+class Incoming implements \JsonSerializable
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -61,5 +61,31 @@ class Incoming
         $this->date = $date;
 
         return $this;
+    }
+
+    public function __set($prop, $value)
+    {
+        $this->$prop = $value;
+        return $this;
+    }
+
+    public function __get($prop)
+    {
+        return $this->$prop;
+    }
+
+    public function __toString()
+    {
+        return json_encode($this);
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'description' => $this->description,
+            'value' => $this->value,
+            'date' => $this->date->format('d/m/Y')
+        ];
     }
 }
