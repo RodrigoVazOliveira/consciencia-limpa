@@ -54,13 +54,26 @@ class IncomingDTO implements \JsonSerializable
         
         return $incoming;
     }
+    
+    public static function convertListIncomingToListIncomingDTO($incomings) 
+    {
+        $incomingDTOs = array();
+        
+        foreach ($incomings as $incoming)
+        {
+            array_push($incomingDTOs, 
+                new IncomingDTO($incoming->getDescription(), $incoming->getValue(), $incoming->getDate()));
+        }
+        
+        return $incomingDTOs;
+    }
 
     public function jsonSerialize()
     {
         return [
             'descricao' => $this->descricao,
             'valor' => $this->valor,
-            'data' => $this->data
+            'data' => $this->data->format('d/m/Y')
         ];
     }
 }
