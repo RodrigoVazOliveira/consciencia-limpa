@@ -44,6 +44,7 @@ class IncomingService
         $incoming = $this->incomingRepository->find($id);
         
         if ($incoming == null):
+            $this->logger->error('findById - Não foi encontrado uma receita com id '.$id);
             throw new \RuntimeException('Não foi encontrado uma receita com id '.$id);
         endif;
         
