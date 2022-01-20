@@ -38,6 +38,18 @@ class IncomingService
         return $this->incomingRepository->findAll();
     }
     
+    public function findById($id) 
+    {
+        $this->logger->info('findById - obtendo todas as receitas no banco de dados por id, id: '.$id);
+        $incoming = $this->incomingRepository->find($id);
+        
+        if ($incoming == null):
+            throw new \RuntimeException('Não foi encontrado uma receita com id '.$id);
+        endif;
+        
+        return $incoming;
+    }
+    
     private function existsEqualsDecriptionsInMonth($description, $date):bool
     {
         $this->logger->info('existsEqualsDecriptionsInMonth - description: '. $description);
