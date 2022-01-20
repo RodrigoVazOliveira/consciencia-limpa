@@ -61,11 +61,15 @@ class IncomingDTO implements \JsonSerializable
         
         foreach ($incomings as $incoming)
         {
-            array_push($incomingDTOs, 
-                new IncomingDTO($incoming->getDescription(), $incoming->getValue(), $incoming->getDate()));
+            array_push($incomingDTOs, convertEntityToDTO($incoming));
         }
         
         return $incomingDTOs;
+    }
+    
+    public static function convertEntityToDTO($incoming): IncomingDTO
+    {
+        return new IncomingDTO($incoming->getDescription(), $incoming->getValue(), $incoming->getDate());
     }
 
     public function jsonSerialize()

@@ -33,11 +33,7 @@ class IncomingController extends AbstractController
         $incomingSaved = $this->incomingService->save($incomingDTO->converterDTOToEntity());
         
         if ($incomingSaved == null) {
-            return new JsonResponse([
-                'mensagem' => 'Já existe uma receita com a descrição registrada nesse mês',
-                'status' => 'BAD_REQUEST',
-                'code' => 400
-            ], 400);
+            return $this->badRequestBuilder('Já existe uma receita com a descrição registrada nesse mês');
         }
         
         return new JsonResponse($incomingSaved, 201);
@@ -50,4 +46,25 @@ class IncomingController extends AbstractController
         $incomingDTOs = IncomingDTO::convertListIncomingToListIncomingDTO($incomings);
         return new JsonResponse($incomingDTOs);
     }
+    
+    #[Route('/{id}', methods: ['GET'], name: 'incoming_find_by_id')]
+    public function findIncomingDetails(int $id): JsonResponse
+    {
+        try {
+            $incoming = $this->incomingService->findById($id);
+            return new JsonResponse(IncomingDTO::convertEntityToDTO($incoming));
+        } catch (\RuntimeException $ex) {
+            return $this->badRequestBuilder($ex->getMessage());
+        }
+    }
+    
+    private function badRequestBuilder($message): JsonResponse
+    {
+        return new JsonResponse([
+            'mensagem' => $message,
+            'status' => 'BAD_REQUEST',
+            'code' => 400
+        ], 400);
+    }
+    
 }
