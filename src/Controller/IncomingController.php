@@ -42,4 +42,12 @@ class IncomingController extends AbstractController
         
         return new JsonResponse($incomingSaved, 201);
     }
+    
+    #[Route(methods: ['GET'], name: 'incoming_get_all')]
+    public function getAll():JsonResponse
+    {
+        $incomings = $this->incomingService->getAll();
+        $incomingDTOs = IncomingDTO::convertListIncomingToListIncomingDTO($incomings);
+        return new JsonResponse($incomingDTOs);
+    }
 }
