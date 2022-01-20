@@ -1,58 +1,45 @@
 <?php
-
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\DTO\IncomingDTO;
 use Symfony\Component\HttpFoundation\Request;
+use App\Service\IncomingService;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 #[Route('/receitas')]
 class IncomingController extends AbstractController
-{   
+{
+
     private LoggerInterface $logger;
-    
-    function __construct(LoggerInterface $logger) {
+
+    private IncomingService $incomingService;
+
+    function __construct(LoggerInterface $logger, IncomingService $incomingService)
+    {
         $this->logger = $logger;
+        $this->incomingService = $incomingService;
     }
-    
+
     #[Route(methods: ['POST'], name: 'incoming_save')]
-    public function save(Request $request,  ValidatorInterface $validator): Response
+    public function save(Request $request): JsonResponse
     {
-        $payload = json_decode($request->getContent(), true);
-        $this->validationPayload($payload, 'descricao');
-        $this->validationPayload($payload, 'valor');
-        $this->validationPayload($payload, 'data');
+        $payload = json_decode($request->getContent());
+        $dataReceita = \DateTime::createFromFormat('d/m/Y', $payload->data)->format('Y-m-d');
+        $incomingDTO = new IncomingDTO($payload->descricao, $payload->valor, $dataReceita);
+        $incomingSaved = $this->incomingService->save($incomingDTO->converterDTOToEntity());
         
-        $dataReceita = \DateTime::createFromFormat('d/m/Y', $payload['data'])->format('Y-m-d');
-        $incomingDTO = new IncomingDTO($payload['descricao'], $payload['valor'], $dataReceita);
-        
-        
-        $validatoinErrors = $validator->validate($incomingDTO);
-        
-        if (count($validatoinErrors) > 0) {
-            $this->logger->error("ocorreu um erro na validacao");
-            $errorsString = (string) $validatoinErrors;
-            return new Response($errorsString);
+        if ($incomingSaved == null) {
+            return new JsonResponse([
+                'mensagem' => 'Já existe uma receita com a descrição registrada nesse mês',
+                'status' => 'BAD_REQUEST',
+                'code' => 400
+            ], 400);
         }
         
-        $this->logger->info('save() - iniciar gravacao da receita ');
-        $response = new Response();
-        $response->setStatusCode(Response::HTTP_CREATED);
-        $response->setContent($incomingDTO->__toString());
-        
-        return $response;
-    }
-    
-    private function validationPayload($payload, $name) 
-    {
-        if (!isset($payload[$name])) {
-            throw new BadRequestHttpException('A '. $name .' não foi informada!');
-        }
+        return new JsonResponse($incomingSaved, 201);
     }
 }
-    
