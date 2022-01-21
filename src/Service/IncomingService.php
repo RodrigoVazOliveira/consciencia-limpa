@@ -51,6 +51,20 @@ class IncomingService
         return $incoming;
     }
     
+    public function update(int $id,Incoming $incoming): ?Incoming
+    {
+        $this->logger->info('update - atualizando receita - id: '.$id);
+        $incomingOld = $this->findById($id);
+        
+        $incomingOld->setDescription($incoming->getDescription());
+        $incomingOld->setValue($incoming->getValue());
+        $incomingOld->setDate($incoming->getDate());
+        
+        $this->entityManager->flush();
+        
+        return $incomingOld;
+    }
+    
     private function existsEqualsDecriptionsInMonth($description, $date):bool
     {
         $this->logger->info('existsEqualsDecriptionsInMonth - description: '. $description);
