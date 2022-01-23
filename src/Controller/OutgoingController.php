@@ -47,10 +47,23 @@ class OutgoingController extends AbstractController
     }
     
     #[Route(methods: ['GET'], name: 'outming_get_all')]
-    function getAllOutgoing()
+    function getAll()
     {
-        $this->logger->info('getAllOutgoing - listando as despesas');
+        $this->logger->info('getAll - listando as despesas');
         $outgoings = $this->outgoinService->getAll();
         return new JsonResponse(IncomingDTO::convertListIncomingToListIncomingDTO($outgoings));
+    }
+    
+    
+    #[Route('/{id}',methods: ['GET'], name: 'outming_get_by_id')]
+    function getById(int $id): JsonResponse
+    {
+        $this->logger->info('getById - buscar despesa por id: '.$id);
+        try {
+            $outgoing = $this->outgoinService->findById($id);
+            return new JsonResponse(IncomingDTO::convertEntityToDTO($outgoing));
+        } catch (\RuntimeException $ex) {
+            return ErrorExceptions::badRequestBuilder($ex->getMessage());
+        }
     }
 }
