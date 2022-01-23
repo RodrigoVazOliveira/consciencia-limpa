@@ -59,6 +59,12 @@ final class OutgoingService
         return $this->save($outgoingOld);
     }
     
+    public function deleteById(int $id) 
+    {
+        $this->entityManager->remove($this->findById($id));
+        $this->entityManager->flush();
+    }
+    
     private function verifyOutgoingDuplication($description, $date)
     {
         $this->logger->info('verifyOutgoingDuplication - description: '.$description. ' mês: '.$date->format('m'));

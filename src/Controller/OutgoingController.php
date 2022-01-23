@@ -85,4 +85,17 @@ class OutgoingController extends AbstractController
             return ErrorExceptions::badRequestBuilder($ex->getMessage());
         }
     }
+    
+    #[Route('/{id}',methods: ['DELETE'], name: 'outming_delete_by_id')]
+    function deleteById(int $id):JsonResponse
+    {
+        $this->logger->info('deleteById - id: '.$id);
+        try {
+            $this->outgoinService->deleteById($id);
+            return new JsonResponse('', 204);
+        } catch (\RuntimeException $ex) {
+            $this->logger->error('deleteById - erro na requisição - message: '.$ex->getMessage());
+            return ErrorExceptions::badRequestBuilder($ex->getMessage());
+        }
+    }
 }
