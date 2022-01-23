@@ -22,11 +22,7 @@ class IncomingService
     public function save(Incoming $incoming): ?Incoming
     {
         $this->logger->info('save - $incoming: ' . $incoming->__toString());
-        if (! $this->existsEqualsDecriptionsInMonth($incoming->getDescription(), $incoming->getDate())) {
-            $this->logger->error('save - ja existe receita nesse mes com essa descrico');
-            return null;
-        }
-
+        $this->verifyIncomingDuplicate($incoming->getDescription(), $incoming->getDate());
         $this->entityManager->persist($incoming);
         $this->entityManager->flush();
 
@@ -55,18 +51,13 @@ class IncomingService
     public function update(int $id, Incoming $incoming): ?Incoming
     {
         $this->logger->info('update - atualizando receita - id: ' . $id);
-        if (!$this->existsEqualsDecriptionsInMonth($incoming->getDescription(), $incomingOld->getDate())) {
-            $this->logger->error('update - Já existe uma receita com essa descrição nesse mês, descricao: '.$incomingOld->getDescription());
-            throw new \RuntimeException('Já existe uma receita com essa descrição nesse mês');
-        }
-        
         $incomingOld = $this->findById($id);
         $incomingOld->setDescription($incoming->getDescription());
         $incomingOld->setValue($incoming->getValue());
         $incomingOld->setDate($incoming->getDate());
-        $this->entityManager->flush();
-
-        return $incomingOld;
+            
+        
+        return $this->save($incomingOld);
     }
 
     public function delete(int $id)
@@ -76,14 +67,23 @@ class IncomingService
         $this->entityManager->flush();
     }
     
+    private function verifyIncomingDuplicate($description, $date) 
+    {
+        $this->logger->info('verifyIncomingDuplicate - verificar duplicidade');
+        if ($this->existsEqualsDecriptionsInMonth($description, $date)) {
+            $this->logger->error('verifyIncomingDuplicate - receita duplicada');
+            throw new \RuntimeException('receita com descrição duplicada, descricao: '. $description . ' mês: '. $date->format('m'));
+        }
+    }
+    
     private function existsEqualsDecriptionsInMonth($description, $date): bool
     {
         $this->logger->info('existsEqualsDecriptionsInMonth - description: ' . $description);
         if ($this->incomingRepository->findByDescriptionByIsMothCurrenty($description, $date) != null) {
             $this->logger->error('existsEqualsDecriptionsInMonth - ja existe receita esse mes - description: ' . $description);
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 }

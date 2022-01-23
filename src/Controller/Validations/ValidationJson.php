@@ -35,7 +35,7 @@ final class ValidationJson
             return $validate;
         }
 
-        return $this->dto->converterDTOToEntityIncoming();
+        return $this->dto->converterDTOToEntity();
     }
 
     public function createOutgoingWithPayload()
