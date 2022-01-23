@@ -35,9 +35,29 @@ final class ValidationJson
             return $validate;
         }
 
-        return $this->dto->converterDTOToEntity();
+        return $this->dto->converterDTOToEntityIncoming();
     }
 
+    public function createOutgoingWithPayload()
+    {
+        $dataReceita = \DateTime::createFromFormat('d/m/Y', $this->payload->data)->format('Y-m-d');
+        $responseErrorsNotNull = $this->responseWithErrorsInputNotNull($this->verifyDataDTO());
+        
+        if ($responseErrorsNotNull != null)
+        {
+            return $responseErrorsNotNull;
+        }
+        
+        $this->dto = new IncomingDTO($this->payload->descricao, $this->payload->valor, $dataReceita);
+        $validate = $this->validateDTO($responseErrorsNotNull);
+        
+        if ($validate != null) {
+            return $validate;
+        }
+        
+        return $this->dto->converterDTOToEntityOuting();
+    }
+    
     private function validateDTO($responseErrorsNotNull): ?JsonResponse
     {
         if ($this->dto == null)
