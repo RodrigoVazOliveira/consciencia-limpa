@@ -8,37 +8,39 @@ use App\DTO\IncomingDTO;
 use Symfony\Component\HttpFoundation\Request;
 use App\Service\IncomingService;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use App\Entity\Incoming;
+use App\Controller\Validations\ErrorExceptions;
+use App\Controller\Validations\ValidationJson;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/receitas')]
-class IncomingController extends AbstractController
+final class IncomingController extends AbstractController
 {
 
     private LoggerInterface $logger;
-
     private IncomingService $incomingService;
-
-    function __construct(LoggerInterface $logger, IncomingService $incomingService)
+    private ValidatorInterface $validator;
+    
+    function __construct(LoggerInterface $logger, IncomingService $incomingService, ValidatorInterface $validator)
     {
         $this->logger = $logger;
         $this->incomingService = $incomingService;
+        $this->validator = $validator;
     }
 
     #[Route(methods: ['POST'], name: 'incoming_save')]
     function save(Request $request): JsonResponse
     {
-        $payload = json_decode($request->getContent());
-        $responseErrors = $this->responseWithErrorsInputNotNull($this->verifyDataIncoming($payload));
-        
-        if ($responseErrors != null) {
-            return $responseErrors;
+        $validationJson = new ValidationJson($this->validator, json_decode($request->getContent()));
+        $incoming = $validationJson->createIncomingWithPayload();
+        if ($incoming instanceof JsonResponse) {
+            return $incoming;
         }
         
-        $incomingSaved = $this->incomingService->save($this->createIncomingWithPayload($payload));
-        
+        $incomingSaved = $this->incomingService->save($incoming);
         if ($incomingSaved == null) {
-            return $this->badRequestBuilder('Já existe uma receita com a descrição registrada nesse mês');
+            return ErrorExceptions::badRequestBuilder('Já existe uma receita com a descrição registrada nesse mês');
         }
+        
         
         return new JsonResponse($incomingSaved, 201);
     }
@@ -58,75 +60,35 @@ class IncomingController extends AbstractController
             $incoming = $this->incomingService->findById($id);
             return new JsonResponse(IncomingDTO::convertEntityToDTO($incoming));
         } catch (\RuntimeException $ex) {
-            return $this->badRequestBuilder($ex->getMessage());
+            return ErrorExceptions::badRequestBuilder($ex->getMessage());
         }
     }
     
     #[Route('/{id}', methods: ['PUT'], name: 'incoming_update')]
     function updateIncomingById(int $id, Request $request): JsonResponse 
     {
-        $payload = json_decode($request->getContent());
-        $responseErrors = $this->responseWithErrorsInputNotNull($this->verifyDataIncoming($payload));
-        
-        if ($responseErrors != null) {
-            return $responseErrors;
+        $validationJson = new ValidationJson($this->validator, json_decode($request->getContent()));
+        $incomingUpdate = $validationJson->createIncomingWithPayload();
+        if ($incomingUpdate instanceof JsonResponse) {
+            return $incomingUpdate;
         }
-        
+
         try {
-            $incoming = $this->incomingService->update($id, $this->createIncomingWithPayload($payload));
-            return new JsonResponse($incoming);
+            $incomingUpdate = $this->incomingService->update($id, $incomingUpdate);
+            return new JsonResponse($incomingUpdate);
         } catch (\RuntimeException $ex) {
-            return $this->badRequestBuilder($ex->getMessage());
+            return ErrorExceptions::badRequestBuilder($ex->getMessage());
         }
     }
     
-    private function createIncomingWithPayload($payload):Incoming
+    #[Route('/{id}', methods: ['DELETE'], name: 'incoming_delete_by_id')]
+    function deleteIncomingById(int $id): JsonResponse
     {
-        $this->logger->info('createIncomingWithPayload - payload: '. json_encode($payload));
-        $dataReceita = \DateTime::createFromFormat('d/m/Y', $payload->data)->format('Y-m-d');
-        $incomingDTO = new IncomingDTO($payload->descricao, $payload->valor, $dataReceita);
-        return $incomingDTO->converterDTOToEntity();
+        try {
+            $this->incomingService->delete($id);
+            return new JsonResponse('', 204);
+        } catch(\RuntimeException $ex) {
+            return ErrorExceptions::badRequestBuilder($ex->getMessage());
+        }
     }
-    
-    private function verifyDataIncoming($payload) 
-    {
-        $errors = array();
-        
-        if (!isset($payload->descricao)):
-            array_push($errors, 'campo descrição não informado');
-        endif;
-        
-        if (!isset($payload->valor)):
-            array_push($errors, 'campo valor não informado');
-        endif;
-        
-        if (!isset($payload->data)):
-            array_push($errors, 'campo data não informado');
-        endif;
-        
-        return $errors;
-    }
-    
-    private function responseWithErrorsInputNotNull($errors):?JsonResponse
-    {
-        if (count($errors) == 0):
-            return null;
-        endif;
-        
-        return new JsonResponse([
-            'status' => 'BAD_REQUEST',
-            'code' => 400,
-            'errors' => $errors
-        ], 400);
-    }
-    
-    private function badRequestBuilder($message): JsonResponse
-    {
-        return new JsonResponse([
-            'mensagem' => $message,
-            'status' => 'BAD_REQUEST',
-            'code' => 400
-        ], 400);
-    }
-    
 }
