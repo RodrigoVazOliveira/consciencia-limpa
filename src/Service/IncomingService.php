@@ -9,9 +9,7 @@ class IncomingService
 {
 
     private $entityManager;
-
     private $incomingRepository;
-
     private $logger;
 
     public function __construct(ManagerRegistry $managerRegistry, LoggerInterface $looger)

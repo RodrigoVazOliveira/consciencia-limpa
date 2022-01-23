@@ -6,7 +6,7 @@ use App\Repository\OutgoingRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OutgoingRepository::class)]
-class Outgoing
+class Outgoing implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -16,7 +16,7 @@ class Outgoing
     #[ORM\Column(type: 'string', length: 255)]
     private $description;
 
-    #[ORM\Column(type: 'decimal', precision: 5, scale: 2)]
+    #[ORM\Column(type: 'decimal', precision: 8, scale: 2)]
     private $value;
 
     #[ORM\Column(type: 'date')]
@@ -61,5 +61,20 @@ class Outgoing
         $this->date = $date;
 
         return $this;
+    }
+    
+    public function __toString()
+    {
+        return json_encode($this);
+    }
+    
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'description' => $this->description,
+            'value' => $this->value,
+            'date' => $this->date->format('d/m/Y')
+        ];
     }
 }

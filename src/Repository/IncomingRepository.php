@@ -24,7 +24,7 @@ class IncomingRepository extends ServiceEntityRepository
         $month = $date->format('m');
         $year  = $date->format('Y');
         $dateIntialMonth = date($year.'-'.$month.'-01');
-        $dateFinalMotnh = date($year.'-'.$month.'-t');
+        $dateFinalMotnh = date('Y-m-t', strtotime($date->format('Y-m-d')));
         
         return $this->createQueryBuilder('i')
             ->where('i.description = :description')

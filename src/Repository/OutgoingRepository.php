@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Outgoing;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Log\LoggerInterface;
 
 /**
  * @method Outgoing|null find($id, $lockMode = null, $lockVersion = null)
@@ -13,38 +14,25 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Outgoing[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class OutgoingRepository extends ServiceEntityRepository
-{
+{   
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Outgoing::class);
     }
-
-    // /**
-    //  * @return Outgoing[] Returns an array of Outgoing objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    
+    public function findByDescriptionByIsMothCurrenty($description, \DateTime $date)
     {
+        $month = $date->format('m');
+        $year  = $date->format('Y');
+        $dateIntialMonth = date($year.'-'.$month.'-01');
+        $dateFinalMotnh = date('Y-m-t', strtotime($date->format('Y-m-d')));
+        
         return $this->createQueryBuilder('o')
-            ->andWhere('o.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('o.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        ->where('o.description = :description')
+        ->andWhere('o.date between :dateIn AND :dateFinal')
+        ->setParameter('description', $description)
+        ->setParameter('dateIn', $dateIntialMonth)
+        ->setParameter('dateFinal', $dateFinalMotnh)
+        ->getQuery()->getOneOrNullResult();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Outgoing
-    {
-        return $this->createQueryBuilder('o')
-            ->andWhere('o.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }
