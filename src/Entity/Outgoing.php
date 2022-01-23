@@ -16,7 +16,7 @@ class Outgoing
     #[ORM\Column(type: 'string', length: 255)]
     private $description;
 
-    #[ORM\Column(type: 'decimal', precision: 5, scale: 2)]
+    #[ORM\Column(type: 'decimal', precision: 8, scale: 2)]
     private $value;
 
     #[ORM\Column(type: 'date')]
