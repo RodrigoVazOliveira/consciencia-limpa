@@ -55,13 +55,12 @@ class IncomingService
     public function update(int $id, Incoming $incoming): ?Incoming
     {
         $this->logger->info('update - atualizando receita - id: ' . $id);
-        $incomingOld = $this->findById($id);
-        
         if (!$this->existsEqualsDecriptionsInMonth($incoming->getDescription(), $incomingOld->getDate())) {
             $this->logger->error('update - Já existe uma receita com essa descrição nesse mês, descricao: '.$incomingOld->getDescription());
             throw new \RuntimeException('Já existe uma receita com essa descrição nesse mês');
         }
-
+        
+        $incomingOld = $this->findById($id);
         $incomingOld->setDescription($incoming->getDescription());
         $incomingOld->setValue($incoming->getValue());
         $incomingOld->setDate($incoming->getDate());

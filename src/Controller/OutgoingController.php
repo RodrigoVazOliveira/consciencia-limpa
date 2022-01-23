@@ -66,4 +66,23 @@ class OutgoingController extends AbstractController
             return ErrorExceptions::badRequestBuilder($ex->getMessage());
         }
     }
+    
+    #[Route('/{id}',methods: ['PUT'], name: 'outming_update')]
+    function update(int $id, Request $request): JsonResponse
+    {
+        $this->logger->info('update - atualizar despesa por id: '.$id.' despesa: '.$request->getContent());
+        $validationJson = new ValidationJson($this->validator, json_decode($request->getContent()));
+        $outgoing = $validationJson->createOutgoingWithPayload();
+        
+        if ($outgoing instanceof JsonResponse) {
+            return $outgoing;
+        }
+        
+        try {
+            $outgoingUpdate = $this->outgoinService->update($id, $outgoing);
+            return new JsonResponse($outgoingUpdate);
+        } catch (\RuntimeException $ex) {
+            return ErrorExceptions::badRequestBuilder($ex->getMessage());
+        }
+    }
 }
