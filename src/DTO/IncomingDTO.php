@@ -3,6 +3,7 @@ namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Incoming;
+use App\Entity\Outgoing;
 
 class IncomingDTO implements \JsonSerializable
 {
@@ -54,6 +55,16 @@ class IncomingDTO implements \JsonSerializable
         ->setDate(new \DateTime($this->data));
         
         return $incoming;
+    }
+    
+    public function converterDTOToEntityOuting():Outgoing
+    {
+        $outgoing = new Outgoing();
+        $outgoing->setDescription($this->descricao)
+        ->setValue($this->valor)
+        ->setDate(new \DateTime($this->data));
+        
+        return $outgoing;
     }
     
     public static function convertListIncomingToListIncomingDTO($incomings) 
