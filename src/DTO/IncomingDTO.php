@@ -8,6 +8,7 @@ class IncomingDTO implements \JsonSerializable
 {
 
     #[Assert\NotBlank(message: 'a descricao nao foi informado!')]
+    #[Assert\Length(max: 255, maxMessage: 'a descricao deve ter no máximo 255 caracteres!')]
     private $descricao;
 
     #[Assert\NotBlank(message: 'o valor não foi informado!')]
@@ -61,7 +62,7 @@ class IncomingDTO implements \JsonSerializable
         
         foreach ($incomings as $incoming)
         {
-            array_push($incomingDTOs, convertEntityToDTO($incoming));
+            array_push($incomingDTOs, self::convertEntityToDTO($incoming));
         }
         
         return $incomingDTOs;
