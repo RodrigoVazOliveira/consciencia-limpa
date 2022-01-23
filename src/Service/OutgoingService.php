@@ -47,6 +47,18 @@ final class OutgoingService
         return $outgoing;
     }
     
+    public function update($id, $outgoing)
+    {
+        $this->logger->info('update - despesa: '.$outgoing->__toString());
+        $outgoingOld = $this->findById($id);
+        
+        $outgoingOld->setDescription($outgoing->getDescription());
+        $outgoingOld->setValue($outgoing->getValue());
+        $outgoingOld->setDate($outgoing->getDate());
+        
+        return $this->save($outgoingOld);
+    }
+    
     private function verifyOutgoingDuplication($description, $date)
     {
         $this->logger->info('verifyOutgoingDuplication - description: '.$description. ' mês: '.$date->format('m'));
