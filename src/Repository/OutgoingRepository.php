@@ -18,33 +18,20 @@ class OutgoingRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Outgoing::class);
     }
-
-    // /**
-    //  * @return Outgoing[] Returns an array of Outgoing objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    
+    public function findByDescriptionByIsMothCurrenty($description, \DateTime $date)
     {
-        return $this->createQueryBuilder('o')
-            ->andWhere('o.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('o.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $month = $date->format('m');
+        $year  = $date->format('Y');
+        $dateIntialMonth = date($year.'-'.$month.'-01');
+        $dateFinalMotnh = date($year.'-'.$month.'-t');
+        
+        return $this->createQueryBuilder('O')
+        ->where('o.description = :description')
+        ->andWhere('o.date between :dateIn AND :dateFinal')
+        ->setParameter('description', $description)
+        ->setParameter('dateIn', $dateIntialMonth)
+        ->setParameter('dateFinal', $dateFinalMotnh)
+        ->getQuery()->getOneOrNullResult();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Outgoing
-    {
-        return $this->createQueryBuilder('o')
-            ->andWhere('o.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }
