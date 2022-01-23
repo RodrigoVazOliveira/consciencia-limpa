@@ -1,9 +1,9 @@
 <?php
 namespace App\Controller\Validations;
 
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use App\DTO\IncomingDTO;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class ValidationJson
 {
