@@ -36,21 +36,18 @@ final class IncomingController extends AbstractController
             return $incoming;
         }
         
-        $incomingSaved = $this->incomingService->save($incoming);
-        if ($incomingSaved == null) {
-            return ErrorExceptions::badRequestBuilder('Já existe uma receita com a descrição registrada nesse mês');
+        try {
+            return new JsonResponse($this->incomingService->save($incoming), 201);
+        } catch (\RuntimeException $ex) {
+            return ErrorExceptions::badRequestBuilder($ex->getMessage()); 
         }
-        
-        
-        return new JsonResponse($incomingSaved, 201);
     }
     
     #[Route(methods: ['GET'], name: 'incoming_get_all')]
     function getAll():JsonResponse
     {
         $incomings = $this->incomingService->getAll();
-        $incomingDTOs = IncomingDTO::convertListIncomingToListIncomingDTO($incomings);
-        return new JsonResponse($incomingDTOs);
+        return new JsonResponse(IncomingDTO::convertListIncomingToListIncomingDTO($incomings));
     }
     
     #[Route('/{id}', methods: ['GET'], name: 'incoming_find_by_id')]
