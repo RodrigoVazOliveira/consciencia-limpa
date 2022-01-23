@@ -11,6 +11,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\Service\OutgoingService;
 use App\Controller\Validations\ValidationJson;
 use App\Controller\Validations\ErrorExceptions;
+use App\DTO\IncomingDTO;
 
 #[Route('/despesas', name: 'despesas_')]
 class OutgoingController extends AbstractController
@@ -33,9 +34,34 @@ class OutgoingController extends AbstractController
         $validationJson = new ValidationJson($this->validator, json_decode($request->getContent()));
         $outgoing = $validationJson->createOutgoingWithPayload();
         
+        if ($outgoing instanceof JsonResponse) {
+            return $outgoing;
+        }
+        
         try {
             $outgoing = $this->outgoinService->save($outgoing);
             return new JsonResponse($outgoing, 201);
+        } catch (\RuntimeException $ex) {
+            return ErrorExceptions::badRequestBuilder($ex->getMessage());
+        }
+    }
+    
+    #[Route(methods: ['GET'], name: 'outming_get_all')]
+    function getAll()
+    {
+        $this->logger->info('getAll - listando as despesas');
+        $outgoings = $this->outgoinService->getAll();
+        return new JsonResponse(IncomingDTO::convertListIncomingToListIncomingDTO($outgoings));
+    }
+    
+    
+    #[Route('/{id}',methods: ['GET'], name: 'outming_get_by_id')]
+    function getById(int $id): JsonResponse
+    {
+        $this->logger->info('getById - buscar despesa por id: '.$id);
+        try {
+            $outgoing = $this->outgoinService->findById($id);
+            return new JsonResponse(IncomingDTO::convertEntityToDTO($outgoing));
         } catch (\RuntimeException $ex) {
             return ErrorExceptions::badRequestBuilder($ex->getMessage());
         }
