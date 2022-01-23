@@ -28,6 +28,25 @@ final class OutgoingService
         return $outgoing;
     }
     
+    public function getAll()
+    {
+        $this->logger->info('getAll - gerando lista de todas as despesas');
+        return $this->outgoindRepository->findAll();
+    }
+    
+    public function findById($id)
+    {
+        $this->logger->info('findById - id: '.$id);
+        $outgoing = $this->outgoindRepository->find($id);
+        
+        if ($outgoing == null) {
+            $this->logger->error('findById - não foi encontrado despesa com id '.$id);
+            throw new \RuntimeException('não foi encontrado despesa com id '.$id);
+        }
+        
+        return $outgoing;
+    }
+    
     private function verifyOutgoingDuplication($description, $date)
     {
         $this->logger->info('verifyOutgoingDuplication - description: '.$description. ' mês: '.$date->format('m'));
