@@ -40,6 +40,6 @@ class IncomingRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('i')
         ->where('i.description = :description')
         ->setParameter('description', $description)
-        ->getQuery()->getArrayResult();
+        ->getQuery()->getResult();
     }
 }
