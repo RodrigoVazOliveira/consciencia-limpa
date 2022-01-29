@@ -46,6 +46,15 @@ final class OutgoingService
         $this->logger->info('getAll - gerando lista de todas as despesas');
         return $this->outgoindRepository->findAll();
     }
+    
+    public function getAllByDescription($description) 
+    {
+        $this->logger->info('getAllByDescription - descricao: '.$description);
+        $outgoings = $this->outgoindRepository->findByDescription($description);
+        $this->logger->info('getAllByDescription - despesas: '. json_encode($outgoings));
+        
+        return $outgoings;
+    }
 
     public function findById($id)
     {
