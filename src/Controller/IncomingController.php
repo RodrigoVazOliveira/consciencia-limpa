@@ -62,8 +62,16 @@ final class IncomingController extends AbstractController
     }
     
     #[Route('/{ano}/{mes}', methods: ['GET'], name: 'incoming_find_by_month')]
-    function findAllByMonth($ano, $mes)
+    function findAllByMonth(int $ano,int $mes)
     {
+        if ($ano < 1970 || $ano > date('Y') || $ano == 0) {
+            return ErrorExceptions::badRequestBuilder('ano informado é invalido');
+        }
+        
+        if ($mes > 12 || $mes <= 0) {
+            return ErrorExceptions::badRequestBuilder('mês informado é invalido');
+        }
+        
         $this->logger->info("findAllByMonth - ano: $ano, mês: $mes");
         $incomings = $this->incomingService->getAllByMonth($mes, $ano);
         return new JsonResponse(IncomingDTO::convertListToListDTO($incomings));

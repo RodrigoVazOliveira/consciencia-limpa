@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Incoming;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 /**
  * @method Incoming|null find($id, $lockMode = null, $lockVersion = null)
@@ -45,14 +46,18 @@ class IncomingRepository extends ServiceEntityRepository
     
     public function findByMoth($month, $year)
     {
-        $dateIntialMonth = date($year.'-'.$month.'-01');
-        $dateFinalMotnh = date("$year-$month-t");
+        $rsm  = new ResultSetMapping();
+        $rsm->addEntityResult(Incoming::class, 'i');
+        $rsm->addFieldResult('i', 'id', 'id');
+        $rsm->addFieldResult('i', 'description', 'description');
+        $rsm->addFieldResult('i', 'value', 'value');
+        $rsm->addFieldResult('i', 'date', 'date');
+
+        $query = $this->getEntityManager()
+        ->createNativeQuery('SELECT * FROM Incoming WHERE EXTRACT(MONTH FROM date) = :mes AND EXTRACT(YEAR FROM date) = :ano', $rsm);
+        $query->setParameter('ano', $year);
+        $query->setParameter('mes', $month);
         
-        return $this->createQueryBuilder('i')
-        ->where('i.description = :description')
-        ->andWhere('i.date between :dateIn AND :dateFinal')
-        ->setParameter('dateIn', $dateIntialMonth)
-        ->setParameter('dateFinal', $dateFinalMotnh)
-        ->getQuery()->getResult();
+        return $query->getResult();
     }
 }
