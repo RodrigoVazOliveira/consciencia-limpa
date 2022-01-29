@@ -5,7 +5,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Incoming;
 use App\Entity\Outgoing;
 
-class IncomingDTO implements \Seria
+class IncomingDTO implements \JsonSerializable
 {
 
     # [Assert\NotBlank(message: 'a descricao nao foi informado!')]
