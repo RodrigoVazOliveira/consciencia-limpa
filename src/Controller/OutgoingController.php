@@ -48,10 +48,10 @@ class OutgoingController extends AbstractController
     }
     
     #[Route(methods: ['GET'], name: 'outming_get_all')]
-    function getAll()
+    function getAll(Request $request): JsonResponse
     {
         $this->logger->info('getAll - listando as despesas');
-        $outgoings = $this->outgoinService->getAll();
+        $outgoings = $this->verifyGetAllFilterDescription($request);
         return new JsonResponse(OutgoingDTO::convertEntityListToListDTO($outgoings));
     }
     
@@ -98,5 +98,17 @@ class OutgoingController extends AbstractController
             $this->logger->error('deleteById - erro na requisição - message: '.$ex->getMessage());
             return ErrorExceptions::badRequestBuilder($ex->getMessage());
         }
+    }
+    
+    private function verifyGetAllFilterDescription(Request $request)
+    {
+        $this->logger->info("verifyGetAllFilterDescription - verificar se possui filtro");
+        if ($request->query->get('descricao') != null) {
+            $description = $request->query->get('descricao');
+            $this->logger->info("verifyGetAllFilterDescription - existe filtro ". $description);
+            return $this->outgoinService->getAllByDescription($description);
+        }
+        
+        return $this->outgoinService->getAll();
     }
 }

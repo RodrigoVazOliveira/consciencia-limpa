@@ -91,8 +91,11 @@ final class IncomingController extends AbstractController
 
     private function verifyGetAllFilterDescription(Request $request)
     {
+        $this->logger->info("verifyGetAllFilterDescription - verificar se possui filtro");
         if ($request->query->get('descricao') != null) {
-            return $this->incomingService->getByDescription($request->query->get('descricao'));
+            $description = $request->query->get('descricao');
+            $this->logger->info("verifyGetAllFilterDescription - existe filtro ". $description);
+            return $this->incomingService->getAllByDescription($description);
         }
         
         return $this->incomingService->getAll();
