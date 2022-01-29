@@ -42,4 +42,17 @@ class IncomingRepository extends ServiceEntityRepository
         ->setParameter('description', $description)
         ->getQuery()->getResult();
     }
+    
+    public function findByMoth($month, $year)
+    {
+        $dateIntialMonth = date($year.'-'.$month.'-01');
+        $dateFinalMotnh = date("$year-$month-t");
+        
+        return $this->createQueryBuilder('i')
+        ->where('i.description = :description')
+        ->andWhere('i.date between :dateIn AND :dateFinal')
+        ->setParameter('dateIn', $dateIntialMonth)
+        ->setParameter('dateFinal', $dateFinalMotnh)
+        ->getQuery()->getResult();
+    }
 }
