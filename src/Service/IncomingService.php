@@ -4,13 +4,17 @@ namespace App\Service;
 use App\Entity\Incoming;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
+use App\Repository\IncomingRepository;
+use Doctrine\ORM\EntityManager;
 
 class IncomingService
 {
 
-    private $entityManager;
-    private $incomingRepository;
-    private $logger;
+    private EntityManager $entityManager;
+
+    private IncomingRepository $incomingRepository;
+
+    private LoggerInterface $logger;
 
     public function __construct(ManagerRegistry $managerRegistry, LoggerInterface $looger)
     {
@@ -55,27 +59,35 @@ class IncomingService
         $incomingOld->setDescription($incoming->getDescription());
         $incomingOld->setValue($incoming->getValue());
         $incomingOld->setDate($incoming->getDate());
-            
-        
+
         return $this->save($incomingOld);
     }
 
     public function delete(int $id)
     {
+        $this->logger->info("delete - id: $id");
         $incomingDelete = $this->findById($id);
         $this->entityManager->remove($incomingDelete);
         $this->entityManager->flush();
     }
-    
-    private function verifyIncomingDuplicate($description, $date) 
+
+    public function getByDescription(string $description)
+    {
+        $this->logger->info("getByDescription - descricao: $description");
+        $incommings = $this->incomingRepository->findByDescription($description);
+        $this->logger->info("getByDescription - receitas: $incommings");
+        return $incommings;
+    }
+
+    private function verifyIncomingDuplicate($description, $date)
     {
         $this->logger->info('verifyIncomingDuplicate - verificar duplicidade');
         if ($this->existsEqualsDecriptionsInMonth($description, $date)) {
             $this->logger->error('verifyIncomingDuplicate - receita duplicada');
-            throw new \RuntimeException('receita com descrição duplicada, descricao: '. $description . ' mês: '. $date->format('m'));
+            throw new \RuntimeException('receita com descrição duplicada, descricao: ' . $description . ' mês: ' . $date->format('m'));
         }
     }
-    
+
     private function existsEqualsDecriptionsInMonth($description, $date): bool
     {
         $this->logger->info('existsEqualsDecriptionsInMonth - description: ' . $description);
