@@ -4,6 +4,7 @@ namespace App\Controller\Validations;
 use App\DTO\IncomingDTO;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\DTO\OutgoingDTO;
 
 final class ValidationJson
 {
@@ -48,14 +49,20 @@ final class ValidationJson
             return $responseErrorsNotNull;
         }
         
-        $this->dto = new IncomingDTO($this->payload->descricao, $this->payload->valor, $dataReceita);
+		$category = 'Outras';
+        
+        if (isset( $this->payload->categoria )) {
+        	$category = $this->payload->categoria;
+        }
+        
+        $this->dto = new OutgoingDTO($this->payload->descricao, $this->payload->valor, $dataReceita, $category);
         $validate = $this->validateDTO($responseErrorsNotNull);
         
         if ($validate != null) {
             return $validate;
         }
         
-        return $this->dto->converterDTOToEntityOuting();
+        return $this->dto->converterDTOToEntity();
     }
     
     private function validateDTO($responseErrorsNotNull): ?JsonResponse
@@ -108,6 +115,7 @@ final class ValidationJson
         if (! isset($this->payload->data)) :
             array_push($errors, 'campo data não informado');
         endif;
+
 
         return $errors;
     }

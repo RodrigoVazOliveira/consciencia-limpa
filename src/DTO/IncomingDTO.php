@@ -8,18 +8,17 @@ use App\Entity\Outgoing;
 class IncomingDTO implements \JsonSerializable
 {
 
-    #[Assert\NotBlank(message: 'a descricao nao foi informado!')]
-    #[Assert\Length(max: 255, maxMessage: 'a descricao deve ter no máximo 255 caracteres!')]
+    # [Assert\NotBlank(message: 'a descricao nao foi informado!')]
+    # [Assert\Length(max: 255, maxMessage: 'a descricao deve ter no máximo 255 caracteres!')]
     private $descricao;
 
-    #[Assert\NotBlank(message: 'o valor não foi informado!')]
+    # [Assert\NotBlank(message: 'o valor não foi informado!')]
     private $valor;
 
-    #[Assert\NotBlank(message: 'A data nao foi informado!')]
-    #[Assert\Date(message: 'a data informada não é valida!')]
+    # [Assert\NotBlank(message: 'A data nao foi informado!')]
+    # [Assert\Date(message: 'a data informada não é valida!')]
     private $data;
 
-    
     public function __construct($descricao, $valor, $data)
     {
         $this->descricao = $descricao;
@@ -27,61 +26,40 @@ class IncomingDTO implements \JsonSerializable
         $this->data = $data;
     }
 
-    public function getDescricao()
-    {
-        return $this->descricao;
-    }
-
-    public function getValor()
-    {
-        return $this->valor;
-    }
-
-    public function getData()
-    {
-        return $this->data;
-    }
-
     public function __toString()
     {
         return json_encode($this);
     }
-    
-    public function converterDTOToEntity():Incoming 
+
+    public function converterDTOToEntity(): Incoming
     {
         $incoming = new Incoming();
         $incoming->setDescription($this->descricao)
-        ->setValue($this->valor)
-        ->setDate(new \DateTime($this->data));
-        
+            ->setValue($this->valor)
+            ->setDate(new \DateTime($this->data));
+
         return $incoming;
     }
-    
-    public function converterDTOToEntityOuting():Outgoing
-    {
-        $outgoing = new Outgoing();
-        $outgoing->setDescription($this->descricao)
-        ->setValue($this->valor)
-        ->setDate(new \DateTime($this->data));
-        
-        return $outgoing;
-    }
-    
-    public static function convertListIncomingToListIncomingDTO($incomings) 
+
+    public static function convertListIncomingToListIncomingDTO($incomings)
     {
         $incomingDTOs = array();
-        
-        foreach ($incomings as $incoming)
-        {
+
+        foreach ($incomings as $incoming) {
             array_push($incomingDTOs, self::convertEntityToDTO($incoming));
         }
-        
+
         return $incomingDTOs;
     }
-    
-    public static function convertEntityToDTO($incoming): IncomingDTO
+
+    public static function convertEntityIncommingToDTO(Incoming $incoming): IncomingDTO
     {
-        return new IncomingDTO($incoming->getDescription(), $incoming->getValue(), $incoming->getDate());
+        return new IncomingDTO($incoming->getDescription(), $incoming->getValue(), $incoming->getDate(), null);
+    }
+
+    public static function convertEntityOutgoingToDTO(Outgoing $outgoind): IncomingDTO
+    {
+        return new IncomingDTO($outgoind->getDescription(), $outgoind->getValue(), $outgoind->getDate(), $outgoind->getCategory());
     }
 
     public function jsonSerialize()

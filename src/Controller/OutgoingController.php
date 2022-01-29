@@ -12,6 +12,7 @@ use App\Service\OutgoingService;
 use App\Controller\Validations\ValidationJson;
 use App\Controller\Validations\ErrorExceptions;
 use App\DTO\IncomingDTO;
+use App\DTO\OutgoingDTO;
 
 #[Route('/despesas', name: 'despesas_')]
 class OutgoingController extends AbstractController
@@ -51,7 +52,7 @@ class OutgoingController extends AbstractController
     {
         $this->logger->info('getAll - listando as despesas');
         $outgoings = $this->outgoinService->getAll();
-        return new JsonResponse(IncomingDTO::convertListIncomingToListIncomingDTO($outgoings));
+        return new JsonResponse(OutgoingDTO::convertEntityListToListDTO($outgoings));
     }
     
     
@@ -61,7 +62,7 @@ class OutgoingController extends AbstractController
         $this->logger->info('getById - buscar despesa por id: '.$id);
         try {
             $outgoing = $this->outgoinService->findById($id);
-            return new JsonResponse(IncomingDTO::convertEntityToDTO($outgoing));
+            return new JsonResponse(OutgoingDTO::convertEntityToDTO($outgoing));
         } catch (\RuntimeException $ex) {
             return ErrorExceptions::badRequestBuilder($ex->getMessage());
         }
