@@ -5,7 +5,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Incoming;
 use App\Entity\Outgoing;
 
-class IncomingDTO implements \JsonSerializable
+class IncomingDTO implements \Seria
 {
 
     # [Assert\NotBlank(message: 'a descricao nao foi informado!')]
@@ -41,7 +41,7 @@ class IncomingDTO implements \JsonSerializable
         return $incoming;
     }
 
-    public static function convertListIncomingToListIncomingDTO($incomings)
+    public static function convertListToListDTO(array $incomings)
     {
         $incomingDTOs = array();
 
@@ -52,14 +52,9 @@ class IncomingDTO implements \JsonSerializable
         return $incomingDTOs;
     }
 
-    public static function convertEntityIncommingToDTO(Incoming $incoming): IncomingDTO
+    public static function convertEntityToDTO(Incoming $incoming): IncomingDTO
     {
-        return new IncomingDTO($incoming->getDescription(), $incoming->getValue(), $incoming->getDate(), null);
-    }
-
-    public static function convertEntityOutgoingToDTO(Outgoing $outgoind): IncomingDTO
-    {
-        return new IncomingDTO($outgoind->getDescription(), $outgoind->getValue(), $outgoind->getDate(), $outgoind->getCategory());
+        return new IncomingDTO($incoming->getDescription(), $incoming->getValue(), $incoming->getDate());
     }
 
     public function jsonSerialize()
