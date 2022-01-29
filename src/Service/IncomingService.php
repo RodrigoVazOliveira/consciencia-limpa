@@ -76,9 +76,18 @@ class IncomingService
         $this->logger->info("getByDescription - descricao: $description");
         $incommings = $this->incomingRepository->findByDescription($description);
         $this->logger->info("getByDescription - receitas: ".json_encode($incommings));
+        
         return $incommings;
     }
 
+    public function getAllByMonth($month, $year) {
+        $this->logger->info("getAllByMonth - mês: $month, ano: $year");
+        $incomings = $this->incomingRepository->findByMoth($month, $year);
+        $this->logger->info("getAllByMonth - receitas: ".json_encode($incomings));
+        
+        return $incomings;
+    }
+    
     private function verifyIncomingDuplicate($description, $date)
     {
         $this->logger->info('verifyIncomingDuplicate - verificar duplicidade');
