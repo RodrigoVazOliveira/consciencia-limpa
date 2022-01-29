@@ -34,4 +34,12 @@ class IncomingRepository extends ServiceEntityRepository
             ->setParameter('dateFinal', $dateFinalMotnh)
             ->getQuery()->getOneOrNullResult();
     }
+    
+    public function findByDescription($description)
+    {
+        return $this->createQueryBuilder('i')
+        ->where('i.description = :description')
+        ->setParameter('description', $description)
+        ->getQuery()->getResult();
+    }
 }
