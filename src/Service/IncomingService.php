@@ -71,7 +71,7 @@ class IncomingService
         $this->entityManager->flush();
     }
 
-    public function getByDescription(string $description):array
+    public function getAllByDescription(string $description):array
     {
         $this->logger->info("getByDescription - descricao: $description");
         $incommings = $this->incomingRepository->findByDescription($description);
