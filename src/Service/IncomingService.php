@@ -71,11 +71,11 @@ class IncomingService
         $this->entityManager->flush();
     }
 
-    public function getByDescription(string $description)
+    public function getByDescription(string $description):array
     {
         $this->logger->info("getByDescription - descricao: $description");
         $incommings = $this->incomingRepository->findByDescription($description);
-        $this->logger->info("getByDescription - receitas: $incommings");
+        $this->logger->info("getByDescription - receitas: ".json_encode($incommings));
         return $incommings;
     }
 
