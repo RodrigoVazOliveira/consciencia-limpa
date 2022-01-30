@@ -5,6 +5,8 @@ use App\Entity\Outgoing;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
+use Doctrine\ORM\Query\ResultSetMapping;
+use App\Entity\Category;
 
 /**
  *
@@ -45,5 +47,29 @@ class OutgoingRepository extends ServiceEntityRepository
             ->setParameter('description', $description)
             ->getQuery()
             ->getResult();
+    }
+    
+    public function findByMoth($month, $year)
+    {
+        $rsm  = new ResultSetMapping();
+        $rsm->addEntityResult(Outgoing::class, 'o');
+        $rsm->addFieldResult('o', 'id', 'id');
+        $rsm->addFieldResult('o', 'description', 'description');
+        $rsm->addFieldResult('o', 'value', 'value');
+        $rsm->addFieldResult('o', 'date', 'date');
+        $rsm->addJoinedEntityResult(Category::class, 'c', 'o', 'category');
+        $rsm->addFieldResult('c', 'category_id', 'id');
+        $rsm->addFieldResult('c', 'name', 'name');
+        
+        $sql = 'SELECT o.id, o.description, o.value, o.date, c.id as category_id, c.name  FROM outgoing o ';
+        $sql .= 'INNER JOIN category c ON c.id = o.category_id ';
+        $sql .= 'WHERE EXTRACT(MONTH FROM date) = :mes AND EXTRACT(YEAR FROM date) = :ano';
+        
+        $query = $this->getEntityManager()
+        ->createNativeQuery($sql, $rsm);
+        $query->setParameter('ano', $year);
+        $query->setParameter('mes', $month);
+        
+        return $query->getResult();
     }
 }

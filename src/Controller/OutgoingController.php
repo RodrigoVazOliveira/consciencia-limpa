@@ -68,6 +68,23 @@ class OutgoingController extends AbstractController
         }
     }
     
+    #[Route('/{ano}/{mes}',methods: ['GET'], name: 'outming_get_all_by_month')]
+    function getAllByMonth(int $ano, int $mes): JsonResponse
+    {
+        if ($ano < 1970 || $ano > date('Y') || $ano == 0) {
+            return ErrorExceptions::badRequestBuilder('ano informado é invalido');
+        }
+        
+        if ($mes > 12 || $mes <= 0) {
+            return ErrorExceptions::badRequestBuilder('mês informado é invalido');
+        }
+        
+        $this->logger->info("getAllByMonth - ano: $ano, mês: $mes");
+        $outgoings = $this->outgoinService->getAllByMonth($mes, $ano);
+        
+        return new JsonResponse(OutgoingDTO::convertEntityListToListDTO($outgoings));
+    }
+    
     #[Route('/{id}',methods: ['PUT'], name: 'outming_update')]
     function update(int $id, Request $request): JsonResponse
     {
