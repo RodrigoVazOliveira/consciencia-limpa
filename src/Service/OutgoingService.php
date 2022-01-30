@@ -87,6 +87,15 @@ final class OutgoingService
         $this->entityManager->flush();
     }
 
+    public function getAllByMonth($month, $year)
+    {
+        $this->logger->info("getAllByMonth - mês: $month, ano: $year");
+        $outgoings = $this->outgoindRepository->findByMoth($month, $year);
+        $this->logger->info("getAllByMonth - despesas: ".json_encode($outgoings));
+        
+        return $outgoings;
+    }
+    
     private function verifyCategory(Category $category): Category
     {
         $this->logger->info('verifyCategory -> $category '.$category->__toString());
