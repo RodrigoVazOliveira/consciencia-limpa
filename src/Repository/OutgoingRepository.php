@@ -5,6 +5,7 @@ use App\Entity\Outgoing;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 /**
  *
@@ -45,5 +46,23 @@ class OutgoingRepository extends ServiceEntityRepository
             ->setParameter('description', $description)
             ->getQuery()
             ->getResult();
+    }
+    
+    public function findByMoth($month, $year)
+    {
+        $rsm  = new ResultSetMapping();
+        $rsm->addEntityResult(Outgoing::class, 'o');
+        $rsm->addFieldResult('o', 'id', 'id');
+        $rsm->addFieldResult('o', 'description', 'description');
+        $rsm->addFieldResult('o', 'value', 'value');
+        $rsm->addFieldResult('o', 'date', 'date');
+        $rsm->addFieldResult('o', 'category_id', 'category');
+        
+        $query = $this->getEntityManager()
+        ->createNativeQuery('SELECT * FROM outgoing WHERE EXTRACT(MONTH FROM date) = :mes AND EXTRACT(YEAR FROM date) = :ano', $rsm);
+        $query->setParameter('ano', $year);
+        $query->setParameter('mes', $month);
+        
+        return $query->getResult();
     }
 }
