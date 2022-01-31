@@ -8,15 +8,16 @@ use App\Entity\Outgoing;
 class IncomingDTO implements \JsonSerializable
 {
 
-    # [Assert\NotBlank(message: 'a descricao nao foi informado!')]
-    # [Assert\Length(max: 255, maxMessage: 'a descricao deve ter no máximo 255 caracteres!')]
+    
+    #[Assert\NotBlank(message: 'a descricao nao foi informado!')]
+    #[Assert\Length(max: 255, maxMessage: 'a descricao deve ter no máximo 255 caracteres!')]
     private $descricao;
 
-    # [Assert\NotBlank(message: 'o valor não foi informado!')]
+    #[Assert\NotBlank(message: 'o valor não foi informado!')]
     private $valor;
 
-    # [Assert\NotBlank(message: 'A data nao foi informado!')]
-    # [Assert\Date(message: 'a data informada não é valida!')]
+    #[Assert\NotBlank(message: 'A data nao foi informado!')]
+    #[Assert\Date(message: 'a data informada não é valida!')]
     private $data;
 
     public function __construct($descricao, $valor, $data)
