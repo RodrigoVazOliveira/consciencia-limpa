@@ -29,3 +29,5 @@ composer.phar
 /nbproject/project.xml
 /.env.test
 /phpunit.xml.dist
+
+nbproject/

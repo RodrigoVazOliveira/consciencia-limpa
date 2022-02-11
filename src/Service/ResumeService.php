@@ -36,7 +36,7 @@ class ResumeService
 
         return $resumeDTO;
     }
-    
+        
     private function getValueTotalOutgoing($month, $year) {
         $sql = 'SELECT ';
         $sql .= 'SUM(value) AS total_value_outgoing ';
